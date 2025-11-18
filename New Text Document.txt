@@ -1,0 +1,173 @@
+Dưới đây là một số **shell script cơ bản** mà bạn có thể cần dùng khi thi thực hành mã nguồn mở, giúp bạn làm quen với các thao tác thường xuyên trong Git và quản lý mã nguồn. Những script này giúp tự động hóa các công việc như cập nhật mã nguồn, kiểm tra trạng thái của repo, tạo branch, v.v.
+
+### 1. **Shell Script để Clone Repo**
+
+Giúp clone một repository từ GitHub hoặc GitLab về máy local.
+
+```bash
+#!/bin/bash
+# Script to clone a Git repository
+
+echo "Enter the repository URL:"
+read repo_url
+git clone $repo_url
+```
+
+* **Cách sử dụng**: Chạy script và nhập URL của repo mà bạn muốn clone.
+* **Kết quả**: Repository sẽ được tải về thư mục hiện tại.
+
+### 2. **Shell Script để Cập nhật Repo (Pull mới nhất từ remote)**
+
+Dùng để cập nhật các thay đổi mới nhất từ remote repository và giải quyết xung đột nếu có.
+
+```bash
+#!/bin/bash
+# Script to pull latest changes from remote repository
+
+echo "Pulling latest changes from remote..."
+git pull origin $(git rev-parse --abbrev-ref HEAD)
+```
+
+* **Cách sử dụng**: Chạy script và nó sẽ tự động `git pull` vào branch hiện tại.
+* **Kết quả**: Cập nhật mã nguồn mới nhất từ remote về local.
+
+### 3. **Shell Script để Commit và Push Thay Đổi**
+
+Script này sẽ thêm tất cả các thay đổi vào staging, commit và push lên remote.
+
+```bash
+#!/bin/bash
+# Script to commit and push changes to Git repository
+
+echo "Enter commit message:"
+read commit_message
+
+git add .
+git commit -m "$commit_message"
+git push origin $(git rev-parse --abbrev-ref HEAD)
+
+echo "Changes have been pushed!"
+```
+
+* **Cách sử dụng**: Chạy script, nhập thông điệp commit, script sẽ tự động thêm các tệp đã thay đổi vào staging, commit, và push lên remote repository.
+* **Kết quả**: Commit và push thay đổi lên branch hiện tại trên remote.
+
+### 4. **Shell Script để Tạo Branch Mới và Chuyển Branch**
+
+Script này giúp bạn tạo một branch mới và chuyển sang branch đó.
+
+```bash
+#!/bin/bash
+# Script to create a new branch and switch to it
+
+echo "Enter the name of the new branch:"
+read new_branch
+
+git checkout -b $new_branch
+echo "Switched to new branch: $new_branch"
+```
+
+* **Cách sử dụng**: Chạy script và nhập tên branch mới bạn muốn tạo.
+* **Kết quả**: Tạo branch mới và tự động chuyển sang branch đó.
+
+### 5. **Shell Script để Kiểm Tra Trạng Thái Git**
+
+Kiểm tra trạng thái repository của bạn (xem những tệp nào thay đổi, những tệp chưa được add vào staging).
+
+```bash
+#!/bin/bash
+# Script to check the status of the Git repository
+
+echo "Checking Git status..."
+git status
+```
+
+* **Cách sử dụng**: Chạy script để kiểm tra trạng thái hiện tại của repository.
+* **Kết quả**: In ra trạng thái Git, bao gồm tệp đã thay đổi, tệp đã staged, tệp chưa tracked.
+
+### 6. **Shell Script để Xử Lý Xung Đột Merge (Mẫu)**
+
+Script này giúp bạn giải quyết xung đột merge. Script không thể tự động giải quyết xung đột nhưng sẽ giúp bạn tìm các tệp xung đột và thông báo cho bạn.
+
+```bash
+#!/bin/bash
+# Script to identify merge conflicts
+
+echo "Attempting to merge..."
+git merge origin/main
+
+if [ $? -ne 0 ]; then
+    echo "Merge conflict detected! Please resolve the conflicts."
+    git diff --name-only --diff-filter=U
+else
+    echo "Merge completed successfully!"
+fi
+```
+
+* **Cách sử dụng**: Chạy script để thực hiện merge. Nếu có xung đột, script sẽ hiển thị các tệp bị xung đột.
+* **Kết quả**: In danh sách các tệp bị xung đột để bạn giải quyết thủ công.
+
+### 7. **Shell Script để Rebase và Giải Quyết Conflicts**
+
+Dùng để rebase một nhánh của bạn với nhánh chính và giải quyết các xung đột nếu có.
+
+```bash
+#!/bin/bash
+# Script to rebase current branch onto main
+
+echo "Rebasing current branch onto main..."
+git fetch origin
+git rebase origin/main
+
+if [ $? -ne 0 ]; then
+    echo "Rebase conflict detected! Resolve the conflicts and run 'git rebase --continue'."
+else
+    echo "Rebase completed successfully!"
+fi
+```
+
+* **Cách sử dụng**: Chạy script để rebase branch hiện tại lên nhánh `main`. Nếu có xung đột, bạn sẽ được thông báo.
+* **Kết quả**: Rebase nhánh của bạn lên nhánh chính.
+
+### 8. **Shell Script để Xóa Branch Cục Bộ và Từ Remote**
+
+Script này giúp bạn xóa branch cục bộ và từ remote sau khi đã hoàn thành công việc.
+
+```bash
+#!/bin/bash
+# Script to delete a local and remote branch
+
+echo "Enter the branch name to delete:"
+read branch_name
+
+git branch -d $branch_name
+git push origin --delete $branch_name
+
+echo "Branch $branch_name has been deleted locally and remotely."
+```
+
+* **Cách sử dụng**: Chạy script và nhập tên branch muốn xóa.
+* **Kết quả**: Xóa branch cả trên local và remote.
+
+---
+
+### Cách Sử Dụng Các Script:
+
+1. **Lưu Script**: Lưu mỗi script vào một file, ví dụ: `git_pull.sh`, `git_commit_push.sh`.
+2. **Cấp Quyền Thực Thi**: Trước khi chạy script, bạn cần cấp quyền thực thi:
+
+   ```bash
+   chmod +x git_pull.sh
+   ```
+3. **Chạy Script**: Sau khi cấp quyền, bạn có thể chạy script bằng cách:
+
+   ```bash
+   ./git_pull.sh
+   ```
+
+### Lưu Ý:
+
+* Hãy đảm bảo bạn hiểu rõ mỗi lệnh trong các script, vì bạn cần có khả năng giải thích và chỉnh sửa chúng trong khi thi thực hành.
+* Tốt nhất là sử dụng các script này trong môi trường thử nghiệm hoặc với các dự án nhỏ để tránh rủi ro.
+
+Chúc bạn thành công trong kỳ thi thực hành mã nguồn mở!
